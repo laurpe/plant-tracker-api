@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const createPlants = require("./helperFunctions");
 
 app.use(cors());
 
@@ -9,7 +10,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/api/plants", function (req, res) {
-    res.send({ id: "1245" });
+    res.send(createPlants(10));
 });
 
 app.listen(3001);
