@@ -1,4 +1,4 @@
-const { faker } = require("@faker-js/faker");
+import { faker } from "@faker-js/faker";
 
 const createPlants = (number) => {
     const arr = [];
@@ -14,4 +14,4 @@ const createPlants = (number) => {
     return arr;
 };
 
-module.exports = createPlants;
+export default createPlants;
