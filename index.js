@@ -62,4 +62,9 @@ app.post("/api/plants", async (req, res) => {
     res.json(response);
 });
 
+app.delete("/api/plants/:id", async (req, res) => {
+    const response = await Plant.deleteOne({ id: req.params.id });
+    res.json(response);
+});
+
 app.listen(process.env.PORT);
