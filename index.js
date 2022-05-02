@@ -50,6 +50,11 @@ app.put("/api/plants/:id", async (req, res) => {
     res.json(plant);
 });
 
+app.delete("/api/plants/:id", async (req, res) => {
+    const response = await Plant.findByIdAndRemove(req.params.id);
+    res.json(response);
+});
+
 app.post("/api/plants", async (req, res) => {
     const plant = new Plant({
         name: faker.animal.insect(),
@@ -59,11 +64,6 @@ app.post("/api/plants", async (req, res) => {
     });
 
     const response = await plant.save();
-    res.json(response);
-});
-
-app.delete("/api/plants/:id", async (req, res) => {
-    const response = await Plant.deleteOne({ id: req.params.id });
     res.json(response);
 });
 
