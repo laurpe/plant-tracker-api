@@ -56,12 +56,7 @@ app.delete("/api/plants/:id", async (req, res) => {
 });
 
 app.post("/api/plants", async (req, res) => {
-    const plant = new Plant({
-        name: faker.animal.insect(),
-        soil: faker.animal.snake(),
-        lastWatered: faker.date.recent(),
-        wateringCycle: faker.random.number({ min: 1, max: 30 }),
-    });
+    const plant = new Plant(req.body);
 
     const response = await plant.save();
     res.json(response);
