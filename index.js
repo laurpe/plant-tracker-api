@@ -2,23 +2,8 @@ import express from "express";
 import cors from "cors";
 import Plant from "./models/plant.js";
 import mongoose from "mongoose";
-import { faker } from "@faker-js/faker";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import { v4 as uuidv4 } from "uuid";
-
-import multer from "multer";
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "images");
-    },
-    filename: (req, file, cb) => {
-        cb(null, uuidv4());
-    },
-});
-
-const upload = multer({ storage: storage }).single("file");
 
 dotenv.config();
 
@@ -37,10 +22,6 @@ mongoose
     .catch((error) => {
         console.log("error connecting to MongoDB:", error.message);
     });
-
-app.get("/", function (req, res) {
-    res.send("Hello World");
-});
 
 app.get("/api/plants", async (req, res) => {
     const plants = await Plant.find({});
@@ -75,16 +56,5 @@ app.post("/api/plants", async (req, res) => {
     const response = await plant.save();
     res.json(response);
 });
-
-app.post("/api/upload", (req, res) => {
-    upload(req, res, (err) => {
-        if (err) {
-            res.sendStatus(500);
-        }
-        res.send(req.file);
-    });
-});
-
-app.use(express.static("images"));
 
 app.listen(process.env.PORT);
