@@ -7,6 +7,7 @@ const plantSchema = new Schema({
     soil: String,
     lastWatered: Date,
     wateringCycle: Number,
+    imageName: String,
 });
 
 plantSchema.set("toJSON", {
