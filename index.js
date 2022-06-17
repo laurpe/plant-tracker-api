@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
-import Plant from "./models/plant.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+
+import Plant from "./models/Plant.js";
+import GrowingMedium from "./models/GrowingMedium.js";
 
 dotenv.config();
 
@@ -23,13 +25,17 @@ mongoose
         console.log("error connecting to MongoDB:", error.message);
     });
 
+// plant data
+
 app.get("/api/plants", async (req, res) => {
-    const plants = await Plant.find({});
+    const plants = await Plant.find({}).populate({ path: "growingMedium" });
     res.json(plants);
 });
 
 app.get("/api/plants/:id", async (req, res) => {
-    const plant = await Plant.findById(req.params.id);
+    const plant = await Plant.findById(req.params.id).populate({
+        path: "growingMedium",
+    });
     res.json(plant);
 });
 
@@ -54,6 +60,20 @@ app.post("/api/plants", async (req, res) => {
     const plant = new Plant(req.body);
 
     const response = await plant.save();
+    res.json(response);
+});
+
+// growth medium data
+
+app.get("/api/growing-mediums", async (req, res) => {
+    const mixes = await GrowingMedium.find({});
+    res.json(mixes);
+});
+
+app.post("/api/growing-mediums", async (req, res) => {
+    const mix = new GrowingMedium(req.body);
+
+    const response = await mix.save();
     res.json(response);
 });
 

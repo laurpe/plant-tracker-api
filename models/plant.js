@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
+import GrowingMedium from "./GrowingMedium.js";
 
 const { Schema } = mongoose;
 
-const plantSchema = new Schema({
+const PlantSchema = new Schema({
     name: String,
+    growingMedium: { type: Schema.Types.ObjectId, ref: GrowingMedium },
     soil: String,
     lastWatered: Date,
     wateringCycle: Number,
     imageName: String,
 });
 
-plantSchema.set("toJSON", {
+PlantSchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
@@ -18,4 +20,4 @@ plantSchema.set("toJSON", {
     },
 });
 
-export default mongoose.model("Plant", plantSchema);
+export default mongoose.model("Plant", PlantSchema);
