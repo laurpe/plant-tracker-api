@@ -1,9 +1,9 @@
-import express from "express";
-import cors from "cors";
-import Plant from "./models/plant.js";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
+const express = require("express");
+const cors = require("cors");
+const Plant = require("./models/plant.js");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
 
 const serverless = require("serverless-http");
 
