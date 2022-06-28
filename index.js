@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 
+const serverless = require("serverless-http");
+
 dotenv.config();
 
 const app = express();
@@ -57,4 +59,4 @@ app.post("/api/plants", async (req, res) => {
     res.json(response);
 });
 
-app.listen(process.env.PORT);
+module.exports.handler = serverless(app);
