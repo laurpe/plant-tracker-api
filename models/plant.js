@@ -18,4 +18,4 @@ plantSchema.set("toJSON", {
     },
 });
 
-export default mongoose.model("Plant", plantSchema);
+module.exports = mongoose.model("Plant", plantSchema);
