@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const Plant = require("./models/Plant.js");
+const GrowingMedium = require("./models/GrowingMedium.js");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
@@ -23,13 +24,17 @@ mongoose
         console.log("error connecting to MongoDB:", error.message);
     });
 
+// plant data
+
 app.get("/api/plants", async (req, res) => {
-    const plants = await Plant.find({});
+    const plants = await Plant.find({}).populate({ path: "growingMedium" });
     res.json(plants);
 });
 
 app.get("/api/plants/:id", async (req, res) => {
-    const plant = await Plant.findById(req.params.id);
+    const plant = await Plant.findById(req.params.id).populate({
+        path: "growingMedium",
+    });
     res.json(plant);
 });
 
@@ -54,6 +59,20 @@ app.post("/api/plants", async (req, res) => {
     const plant = new Plant(req.body);
 
     const response = await plant.save();
+    res.json(response);
+});
+
+// growth medium data
+
+app.get("/api/growing-mediums", async (req, res) => {
+    const mixes = await GrowingMedium.find({});
+    res.json(mixes);
+});
+
+app.post("/api/growing-mediums", async (req, res) => {
+    const mix = new GrowingMedium(req.body);
+
+    const response = await mix.save();
     res.json(response);
 });
 

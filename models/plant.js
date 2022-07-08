@@ -6,7 +6,6 @@ const { Schema } = mongoose;
 const PlantSchema = new Schema({
     name: String,
     growingMedium: { type: Schema.Types.ObjectId, ref: GrowingMedium },
-    soil: String,
     lastWatered: Date,
     wateringCycle: Number,
     imageName: String,
