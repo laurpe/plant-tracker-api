@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 import GrowingMedium from "./GrowingMedium.js";
 
 const { Schema } = mongoose;
@@ -20,4 +20,4 @@ PlantSchema.set("toJSON", {
     },
 });
 
-export default mongoose.model("Plant", PlantSchema);
+module.exports = mongoose.model("Plant", plantSchema);
