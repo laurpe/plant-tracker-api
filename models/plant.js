@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-import GrowingMedium from "./GrowingMedium.js";
+const GrowingMedium = require("./GrowingMedium.js");
 
 const { Schema } = mongoose;
 
@@ -20,4 +20,4 @@ PlantSchema.set("toJSON", {
     },
 });
 
-module.exports = mongoose.model("Plant", plantSchema);
+module.exports = mongoose.model("Plant", PlantSchema);

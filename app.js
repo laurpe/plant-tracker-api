@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const Plant = require("./models/plant.js");
+const Plant = require("./models/Plant.js");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
