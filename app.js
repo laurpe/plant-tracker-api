@@ -27,22 +27,27 @@ mongoose
 // plant data
 
 app.get("/api/plants", async (req, res) => {
-    const plants = await Plant.find({}).populate({ path: "growingMedium" });
+    const plants = await Plant.find({});
     res.json(plants);
 });
 
 app.get("/api/plants/:id", async (req, res) => {
-    const plant = await Plant.findById(req.params.id).populate({
-        path: "growingMedium",
-    });
+    const plant = await Plant.findById(req.params.id);
     res.json(plant);
 });
 
 app.put("/api/plants/:id", async (req, res) => {
-    const { lastWatered } = req.body;
+    const body = req.body;
+
     const plant = await Plant.findByIdAndUpdate(
         req.params.id,
-        { lastWatered: lastWatered },
+        {
+            name: body.name,
+            growingMedium: body.growingMedium,
+            lastWatered: body.lastWatered,
+            wateringCycle: body.wateringCycle,
+            imageName: body.imageName,
+        },
         {
             new: true,
         }
@@ -65,8 +70,13 @@ app.post("/api/plants", async (req, res) => {
 // growth medium data
 
 app.get("/api/growing-mediums", async (req, res) => {
-    const mixes = await GrowingMedium.find({});
-    res.json(mixes);
+    const growingMediums = await GrowingMedium.find({});
+    res.json(growingMediums);
+});
+
+app.get("/api/growing-mediums/:id", async (req, res) => {
+    const growingMedium = await GrowingMedium.findById(req.params.id);
+    res.json(growingMedium);
 });
 
 app.post("/api/growing-mediums", async (req, res) => {
