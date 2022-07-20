@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 
+const Plant = require("./Plant");
+const GrowingMedium = require("./GrowingMedium");
+
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
