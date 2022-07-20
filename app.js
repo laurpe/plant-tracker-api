@@ -5,6 +5,8 @@ const GrowingMedium = require("./models/GrowingMedium.js");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
+const User = require("./models/User.js");
+const bcrypt = require("bcrypt");
 
 dotenv.config();
 
@@ -87,5 +89,20 @@ app.post("/api/growing-mediums", async (req, res) => {
 });
 
 // users
+
+app.post("/api/users", async (req, res) => {
+    const { username, password } = req.body;
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const user = new User({
+        username,
+        passwordHash,
+    });
+
+    const response = await user.save();
+    res.json(response);
+});
 
 module.exports = app;
