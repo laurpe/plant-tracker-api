@@ -105,4 +105,10 @@ app.post("/api/users", async (req, res) => {
     res.json(response);
 });
 
+app.get("/api/users", async (req, res) => {
+    const users = await User.find({});
+
+    res.json(users);
+});
+
 module.exports = app;
