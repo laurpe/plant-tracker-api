@@ -4,7 +4,9 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
     username: String,
-    password: String,
+    passwordHash: String,
+    plants: [{ type: mongoose.Schema.Types.ObjectId, ref: Plant }],
+    growingMediums: [{ type: mongoose.Schema.Types.ObjectId, ref: Plant }],
 });
 
 UserSchema.set("toJSON", {
@@ -12,6 +14,7 @@ UserSchema.set("toJSON", {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
+        delete returnedObject.passwordHash;
     },
 });
 
