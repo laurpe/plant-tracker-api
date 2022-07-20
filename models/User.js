@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
     username: String,
-    passwordHash: String,
+    password: String,
     plants: [{ type: mongoose.Schema.Types.ObjectId, ref: Plant }],
     growingMediums: [{ type: mongoose.Schema.Types.ObjectId, ref: Plant }],
 });

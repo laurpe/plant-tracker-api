@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const User = require("./models/User.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 dotenv.config();
 
@@ -98,7 +99,7 @@ app.post("/api/users", async (req, res) => {
 
     const user = new User({
         username,
-        passwordHash,
+        password: passwordHash,
     });
 
     const response = await user.save();
@@ -109,6 +110,31 @@ app.get("/api/users", async (req, res) => {
     const users = await User.find({});
 
     res.json(users);
+});
+
+app.post("/api/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    console.log(user);
+
+    if (!user) {
+        res.json({ error: "Invalid username or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+        res.json({ error: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+        { username: user.username, id: user._id },
+        process.env.JWT_SECRET
+    );
+
+    res.json({ token, username: user.username });
 });
 
 module.exports = app;
