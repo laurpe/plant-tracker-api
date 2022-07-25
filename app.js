@@ -117,8 +117,6 @@ app.post("/api/login", async (req, res) => {
 
     const user = await User.findOne({ username });
 
-    console.log(user);
-
     if (!user) {
         res.json({ error: "Invalid username or password" });
     }
