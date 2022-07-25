@@ -27,10 +27,58 @@ mongoose
         console.log("error connecting to MongoDB:", error.message);
     });
 
+app.post("/api/users", async (req, res) => {
+    const { username, password } = req.body;
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const user = new User({
+        username,
+        password: passwordHash,
+    });
+
+    const response = await user.save();
+    res.json(response);
+});
+
+app.post("/api/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+        res.json({ error: "Invalid username or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+        res.json({ error: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+        { username: user.username, id: user._id },
+        process.env.JWT_SECRET
+    );
+
+    res.json({ token, username: user.username });
+});
+
+app.use((req, res, next) => {
+    const token = req.headers.authorization.substring(7);
+
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    res.locals.userId = decodedToken.id;
+
+    next();
+});
+
 // plant data
 
 app.get("/api/plants", async (req, res) => {
-    const plants = await Plant.find({});
+    const plants = await Plant.find({ userId: res.locals.userId });
     res.json(plants);
 });
 
@@ -64,7 +112,7 @@ app.delete("/api/plants/:id", async (req, res) => {
 });
 
 app.post("/api/plants", async (req, res) => {
-    const plant = new Plant(req.body);
+    const plant = new Plant({ ...req.body, userId: res.locals.userId });
 
     const response = await plant.save();
     res.json(response);
@@ -91,48 +139,10 @@ app.post("/api/growing-mediums", async (req, res) => {
 
 // users
 
-app.post("/api/users", async (req, res) => {
-    const { username, password } = req.body;
+// app.get("/api/users", async (req, res) => {
+//     const users = await User.find({});
 
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    const user = new User({
-        username,
-        password: passwordHash,
-    });
-
-    const response = await user.save();
-    res.json(response);
-});
-
-app.get("/api/users", async (req, res) => {
-    const users = await User.find({});
-
-    res.json(users);
-});
-
-app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-
-    if (!user) {
-        res.json({ error: "Invalid username or password" });
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-        res.json({ error: "Invalid username or password" });
-    }
-
-    const token = jwt.sign(
-        { username: user.username, id: user._id },
-        process.env.JWT_SECRET
-    );
-
-    res.json({ token, username: user.username });
-});
+//     res.json(users);
+// });
 
 module.exports = app;
