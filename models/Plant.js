@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const GrowingMedium = require("./GrowingMedium.js");
+const User = require("./User.js");
 
 const { Schema } = mongoose;
 
@@ -9,6 +10,7 @@ const PlantSchema = new Schema({
     lastWatered: Date,
     wateringCycle: Number,
     imageName: String,
+    userId: { type: Schema.Types.ObjectId, ref: User },
 });
 
 PlantSchema.set("toJSON", {
