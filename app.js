@@ -66,6 +66,10 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.use((req, res, next) => {
+    if (!req.headers.authorization) {
+        res.status(401).json({ error: "token missing or invalid" });
+    }
+
     const token = req.headers.authorization.substring(7);
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
