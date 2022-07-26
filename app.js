@@ -38,8 +38,9 @@ app.post("/api/users", async (req, res) => {
         password: passwordHash,
     });
 
-    const response = await user.save();
-    res.json(response);
+    await user.save();
+
+    res.send(201);
 });
 
 app.post("/api/login", async (req, res) => {
