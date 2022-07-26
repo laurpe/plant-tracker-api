@@ -28,13 +28,13 @@ mongoose
     });
 
 app.post("/api/users", async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     const user = new User({
-        username,
+        email,
         password: passwordHash,
     });
 
@@ -43,26 +43,26 @@ app.post("/api/users", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
 
     if (!user) {
-        res.json({ error: "Invalid username or password" });
+        res.json({ error: "Invalid email or password" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-        res.json({ error: "Invalid username or password" });
+        res.json({ error: "Invalid email or password" });
     }
 
     const token = jwt.sign(
-        { username: user.username, id: user._id },
+        { email: user.email, id: user._id },
         process.env.JWT_SECRET
     );
 
-    res.json({ token, username: user.username });
+    res.json({ token, email: user.email });
 });
 
 app.use((req, res, next) => {

@@ -6,7 +6,7 @@ const GrowingMedium = require("./GrowingMedium");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-    username: String,
+    email: String,
     password: String,
 });
 
