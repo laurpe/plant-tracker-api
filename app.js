@@ -33,8 +33,9 @@ app.post("/api/users", async (req, res) => {
     const foundUser = await User.findOne({ email });
 
     if (foundUser) {
-        res.json({ error: "Email already associated with an account" });
-        return;
+        return res.status(400).json({
+            error: "Email already associated with an account",
+        });
     }
 
     const saltRounds = 10;
@@ -56,14 +57,13 @@ app.post("/api/login", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-        res.json({ error: "Invalid email or password" });
-        return;
+        return res.status(400).json({ error: "Invalid email or password" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-        res.json({ error: "Invalid email or password" });
+        res.status(400).json({ error: "Invalid email or password" });
         return;
     }
 
@@ -77,8 +77,7 @@ app.post("/api/login", async (req, res) => {
 
 app.use((req, res, next) => {
     if (!req.headers.authorization) {
-        res.status(401).json({ error: "Token missing or invalid" });
-        return;
+        return res.status(401).json({ error: "Token missing or invalid" });
     }
 
     const token = req.headers.authorization.substring(7);
