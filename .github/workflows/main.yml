@@ -22,6 +22,8 @@ jobs:
                   npm run build --if-present
               env:
                   CI: true
+                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
             - name: zip
               uses: montudor/action-zip@v0.1.0
               with:
@@ -31,8 +33,6 @@ jobs:
               with:
                   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  mongodb_uri: ${{ secrets.MONGODB_URI }}
-                  jwt_secret: ${{ secrets.JWT_SECRET }}
                   aws_region: eu-north-1
                   function_name: plant-api
                   zip_file: bundle.zip
