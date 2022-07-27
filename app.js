@@ -135,7 +135,9 @@ app.post("/api/plants", async (req, res) => {
 // growth medium data
 
 app.get("/api/growing-mediums", async (req, res) => {
-    const growingMediums = await GrowingMedium.find({});
+    const growingMediums = await GrowingMedium.find({
+        userId: [res.locals.userId, null],
+    });
     res.json(growingMediums);
 });
 
@@ -145,7 +147,7 @@ app.get("/api/growing-mediums/:id", async (req, res) => {
 });
 
 app.post("/api/growing-mediums", async (req, res) => {
-    const mix = new GrowingMedium(req.body);
+    const mix = new GrowingMedium({ ...req.body, userId: res.locals.userId });
 
     const response = await mix.save();
     res.json(response);
