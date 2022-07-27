@@ -3,6 +3,9 @@ on:
     push:
         branches:
             - master
+env:
+    MONGODB_URI: ${{ secrets.MONGODB_URI }}
+    JWT_SECRET: ${{ secrets.JWT_SECRET }}
 jobs:
     deploy_source:
         name: build and deploy lambda
@@ -22,8 +25,6 @@ jobs:
                   npm run build --if-present
               env:
                   CI: true
-                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
-                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
             - name: zip
               uses: montudor/action-zip@v0.1.0
               with:
