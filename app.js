@@ -34,6 +34,7 @@ app.post("/api/users", async (req, res) => {
 
     if (foundUser) {
         res.json({ error: "Email already associated with an account" });
+        return;
     }
 
     const saltRounds = 10;
@@ -56,12 +57,14 @@ app.post("/api/login", async (req, res) => {
 
     if (!user) {
         res.json({ error: "Invalid email or password" });
+        return;
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
         res.json({ error: "Invalid email or password" });
+        return;
     }
 
     const token = jwt.sign(
@@ -75,6 +78,7 @@ app.post("/api/login", async (req, res) => {
 app.use((req, res, next) => {
     if (!req.headers.authorization) {
         res.status(401).json({ error: "Token missing or invalid" });
+        return;
     }
 
     const token = req.headers.authorization.substring(7);
