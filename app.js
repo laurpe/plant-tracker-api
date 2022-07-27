@@ -5,6 +5,9 @@ const GrowingMedium = require("./models/GrowingMedium.js");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
+const User = require("./models/User.js");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 dotenv.config();
 
@@ -24,10 +27,72 @@ mongoose
         console.log("error connecting to MongoDB:", error.message);
     });
 
+app.post("/api/users", async (req, res) => {
+    const { email, password } = req.body;
+
+    const foundUser = await User.findOne({ email });
+
+    if (foundUser) {
+        return res.status(400).json({
+            error: "Email already associated with an account",
+        });
+    }
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const user = new User({
+        email,
+        password: passwordHash,
+    });
+
+    await user.save();
+
+    res.sendStatus(201);
+});
+
+app.post("/api/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return res.status(400).json({ error: "Invalid email or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+        res.status(400).json({ error: "Invalid email or password" });
+        return;
+    }
+
+    const token = jwt.sign(
+        { email: user.email, id: user._id },
+        process.env.JWT_SECRET
+    );
+
+    res.json({ token, email: user.email });
+});
+
+app.use((req, res, next) => {
+    if (!req.headers.authorization) {
+        return res.status(401).json({ error: "Token missing or invalid" });
+    }
+
+    const token = req.headers.authorization.substring(7);
+
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    res.locals.userId = decodedToken.id;
+
+    next();
+});
+
 // plant data
 
 app.get("/api/plants", async (req, res) => {
-    const plants = await Plant.find({});
+    const plants = await Plant.find({ userId: res.locals.userId });
     res.json(plants);
 });
 
@@ -61,7 +126,7 @@ app.delete("/api/plants/:id", async (req, res) => {
 });
 
 app.post("/api/plants", async (req, res) => {
-    const plant = new Plant(req.body);
+    const plant = new Plant({ ...req.body, userId: res.locals.userId });
 
     const response = await plant.save();
     res.json(response);
@@ -70,7 +135,9 @@ app.post("/api/plants", async (req, res) => {
 // growth medium data
 
 app.get("/api/growing-mediums", async (req, res) => {
-    const growingMediums = await GrowingMedium.find({});
+    const growingMediums = await GrowingMedium.find({
+        userId: [res.locals.userId, null],
+    });
     res.json(growingMediums);
 });
 
@@ -80,7 +147,7 @@ app.get("/api/growing-mediums/:id", async (req, res) => {
 });
 
 app.post("/api/growing-mediums", async (req, res) => {
-    const mix = new GrowingMedium(req.body);
+    const mix = new GrowingMedium({ ...req.body, userId: res.locals.userId });
 
     const response = await mix.save();
     res.json(response);
