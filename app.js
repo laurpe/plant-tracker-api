@@ -30,6 +30,12 @@ mongoose
 app.post("/api/users", async (req, res) => {
     const { email, password } = req.body;
 
+    const foundUser = await User.findOne({ email });
+
+    if (foundUser) {
+        res.json({ error: "Email already associated with an account" });
+    }
+
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
@@ -40,7 +46,7 @@ app.post("/api/users", async (req, res) => {
 
     await user.save();
 
-    res.send(201);
+    res.sendStatus(201);
 });
 
 app.post("/api/login", async (req, res) => {
@@ -68,7 +74,7 @@ app.post("/api/login", async (req, res) => {
 
 app.use((req, res, next) => {
     if (!req.headers.authorization) {
-        res.status(401).json({ error: "token missing or invalid" });
+        res.status(401).json({ error: "Token missing or invalid" });
     }
 
     const token = req.headers.authorization.substring(7);
@@ -141,13 +147,5 @@ app.post("/api/growing-mediums", async (req, res) => {
     const response = await mix.save();
     res.json(response);
 });
-
-// users
-
-// app.get("/api/users", async (req, res) => {
-//     const users = await User.find({});
-
-//     res.json(users);
-// });
 
 module.exports = app;
