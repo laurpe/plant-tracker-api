@@ -31,9 +31,9 @@ jobs:
               with:
                   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
                   JWT_SECRET: test
                   RANDOM: random
+                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
                   aws_region: eu-north-1
                   function_name: plant-api
                   zip_file: bundle.zip
