@@ -67,10 +67,14 @@ app.post("/api/login", async (req, res) => {
         return;
     }
 
+    console.log("secret before creating token: ", process.env.JWT_SECRET);
+
     const token = jwt.sign(
         { email: user.email, id: user._id },
         process.env.JWT_SECRET
     );
+
+    console.log("token inside login post request: ", token);
 
     res.json({ token, email: user.email });
 });
