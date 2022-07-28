@@ -17,8 +17,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const url = process.env.MONGODB_URI;
-const secret = process.env.JWT_SECRET;
-console.log("secret: ", secret);
+console.log(process.env);
 
 mongoose
     .connect(url)
