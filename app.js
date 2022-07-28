@@ -17,7 +17,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const url = process.env.MONGODB_URI;
-console.log(process.env);
 
 mongoose
     .connect(url)
