@@ -38,3 +38,4 @@ jobs:
                   aws_region: eu-north-1
                   function_name: plant-api
                   zip_file: bundle.zip
+                  environment: foo=bar
