@@ -17,6 +17,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const url = process.env.MONGODB_URI;
+const secret = process.env.JWT_SECRET;
 
 mongoose
     .connect(url)
@@ -67,7 +68,7 @@ app.post("/api/login", async (req, res) => {
         return;
     }
 
-    console.log("secret before creating token: ", process.env.JWT_SECRET);
+    console.log("secret before creating token: ", secret);
 
     const token = jwt.sign(
         { email: user.email, id: user._id },
