@@ -3,10 +3,6 @@ on:
     push:
         branches:
             - master
-env:
-    MONGODB_URI: ${{ secrets.MONGODB_URI }}
-    JWT_SECRET: test
-    RANDOM: random
 jobs:
     deploy_source:
         name: build and deploy lambda
@@ -38,4 +34,4 @@ jobs:
                   aws_region: eu-north-1
                   function_name: plant-api
                   zip_file: bundle.zip
-                  environment: foo=bar
+                  environment: MONGODB_URI=${{ secrets.MONGODB_URI }},JWT_SECRET=${{ secrets.JWT_SECRET }}
