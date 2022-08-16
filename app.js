@@ -89,8 +89,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.delete("/api/users/", async (req, res) => {
-    const response = await User.findByIdAndRemove(req.params.id);
+app.delete("/api/users", async (req, res) => {
+    const response = await User.findByIdAndRemove(res.locals.userId);
+
+    if (!response) {
+        return res.status(401).json({error: "Not authorized"})
+    }
 
     res.sendStatus(200);
 })
