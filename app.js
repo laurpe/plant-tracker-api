@@ -89,6 +89,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.delete("/api/users/", async (req, res) => {
+    const response = await User.findByIdAndRemove(req.params.id);
+
+    res.sendStatus(200);
+})
+
 // plant data
 
 app.get("/api/plants", async (req, res) => {
