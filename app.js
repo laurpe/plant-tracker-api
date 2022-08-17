@@ -69,12 +69,14 @@ app.post("/api/login", async (req, res) => {
 
     const token = jwt.sign(
         { email: user.email, id: user._id },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 15 }
     );
 
     const refreshToken = jwt.sign(
         { email: user.email, id: user._id },
-        process.env.JWT_REFRESH_SECRET
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
     );
 
     res.json({ token, refreshToken, email: user.email });
