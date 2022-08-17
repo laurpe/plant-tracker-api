@@ -96,6 +96,9 @@ app.delete("/api/users", async (req, res) => {
         return res.status(401).json({error: "Not authorized"})
     }
 
+    await Plant.deleteMany({userId: res.locals.userId})
+    await GrowingMedium.deleteMany({userId: res.locals.userId})
+
     res.sendStatus(200);
 })
 
