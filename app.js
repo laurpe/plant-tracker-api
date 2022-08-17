@@ -82,6 +82,24 @@ app.post("/api/login", async (req, res) => {
     res.json({ token, refreshToken, email: user.email });
 });
 
+app.post("/api/refresh", async (req, res) => {
+    const body = req.body;
+    const refreshToken = body.refreshToken;
+
+    const decodedRefreshToken = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET
+    );
+
+    const token = jwt.sign(
+        { email: decodedRefreshToken.email, id: decodedRefreshToken.id },
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 15 }
+    );
+
+    res.json({ token });
+});
+
 app.use((req, res, next) => {
     if (!req.headers.authorization) {
         return res.status(401).json({ error: "Token missing or invalid" });
