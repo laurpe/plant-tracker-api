@@ -20,7 +20,7 @@ const url = process.env.MONGODB_URI;
 
 mongoose
     .connect(url)
-    .then((result) => {
+    .then(() => {
         console.log("connected to MongoDB");
     })
     .catch((error) => {
@@ -72,7 +72,12 @@ app.post("/api/login", async (req, res) => {
         process.env.JWT_SECRET
     );
 
-    res.json({ token, email: user.email });
+    const refreshToken = jwt.sign(
+        { email: user.email, id: user._id },
+        process.env.JWT_REFRESH_SECRET
+    );
+
+    res.json({ token, refreshToken, email: user.email });
 });
 
 app.use((req, res, next) => {
@@ -93,14 +98,14 @@ app.delete("/api/users", async (req, res) => {
     const response = await User.findByIdAndRemove(res.locals.userId);
 
     if (!response) {
-        return res.status(401).json({error: "Not authorized"})
+        return res.status(401).json({ error: "Not authorized" });
     }
 
-    await Plant.deleteMany({userId: res.locals.userId})
-    await GrowingMedium.deleteMany({userId: res.locals.userId})
+    await Plant.deleteMany({ userId: res.locals.userId });
+    await GrowingMedium.deleteMany({ userId: res.locals.userId });
 
     res.sendStatus(200);
-})
+});
 
 // plant data
 
