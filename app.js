@@ -70,7 +70,7 @@ app.post("/api/login", async (req, res) => {
     const token = jwt.sign(
         { email: user.email, id: user._id },
         process.env.JWT_SECRET,
-        { expiresIn: 60 * 15 }
+        { expiresIn: 5 }
     );
 
     const refreshToken = jwt.sign(
@@ -107,11 +107,15 @@ app.use((req, res, next) => {
 
     const token = req.headers.authorization.substring(7);
 
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
+        if (error) {
+            return res.status(401).json({ error: "Token missing or invalid" });
+        }
 
-    res.locals.userId = decodedToken.id;
+        res.locals.userId = decodedToken.id;
 
-    next();
+        next();
+    });
 });
 
 app.delete("/api/users", async (req, res) => {
