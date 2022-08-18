@@ -94,7 +94,7 @@ app.post("/api/refresh", async (req, res) => {
     const token = jwt.sign(
         { email: decodedRefreshToken.email, id: decodedRefreshToken.id },
         process.env.JWT_SECRET,
-        { expiresIn: 60 * 15 }
+        { expiresIn: 5 }
     );
 
     res.json({ token });
