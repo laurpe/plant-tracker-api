@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest --verbose --runInBand",
         "start": "nodemon index.js",
         "dev": "nodemon index-local.js"
     },
@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "@faker-js/faker": "^6.1.2",
+        "dayjs": "^1.11.5",
         "eslint": "^8.22.0",
         "jest": "^28.1.3",
         "supertest": "^6.2.4"
