@@ -61,10 +61,29 @@ describe("User", () => {
             .startOf("date");
         const in7Days = dayjs().add(7, "day").utcOffset(0).startOf("date");
 
-        console.log(refreshTokenExpDayjs);
-        console.log(in7Days);
-
         expect(tomorrow.isSame(tokenExpDayjs));
         expect(in7Days.isSame(refreshTokenExpDayjs));
+    });
+
+    test("gets new token when requesting it with a valid refreshToken", async () => {
+        const response = await api
+            .post("/api/login")
+            .send({ email: "tester@example.org", password: "secret" });
+
+        const refreshToken = response.body.refreshToken;
+
+        const refreshResponse = await api
+            .post("/api/refresh")
+            .send({ refreshToken });
+
+        expect(refreshResponse.body).toHaveProperty("token");
+    });
+
+    test("gets status code 400 if given refresh token is not valid", async () => {
+        await api
+            .post("/api/refresh")
+            .send({ refreshToken: "sdfsdfsfui4354h5435" })
+            .expect(400)
+            .expect("Content-Type", /application\/json/);
     });
 });
