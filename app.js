@@ -70,13 +70,13 @@ app.post("/api/login", async (req, res) => {
     const token = jwt.sign(
         { email: user.email, id: user._id },
         process.env.JWT_SECRET,
-        { expiresIn: 5 }
+        { expiresIn: 60 * 60 * 24 }
     );
 
     const refreshToken = jwt.sign(
         { email: user.email, id: user._id },
         process.env.JWT_REFRESH_SECRET,
-        { expiresIn: 10 }
+        { expiresIn: "7d" }
     );
 
     res.json({ token, refreshToken, email: user.email });
@@ -97,7 +97,7 @@ app.post("/api/refresh", async (req, res) => {
             const token = jwt.sign(
                 { email: decodedToken.email, id: decodedToken.id },
                 process.env.JWT_SECRET,
-                { expiresIn: 5 }
+                { expiresIn: 60 * 60 * 24 }
             );
 
             res.json({ token });
