@@ -20,7 +20,7 @@ const url = process.env.MONGODB_URI;
 
 mongoose
     .connect(url)
-    .then((result) => {
+    .then(() => {
         console.log("connected to MongoDB");
     })
     .catch((error) => {
@@ -69,10 +69,40 @@ app.post("/api/login", async (req, res) => {
 
     const token = jwt.sign(
         { email: user.email, id: user._id },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 60 * 24 }
     );
 
-    res.json({ token, email: user.email });
+    const refreshToken = jwt.sign(
+        { email: user.email, id: user._id },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    res.json({ token, refreshToken, email: user.email });
+});
+
+app.post("/api/refresh", async (req, res) => {
+    const body = req.body;
+    const refreshToken = body.refreshToken;
+
+    jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET,
+        (error, decodedToken) => {
+            if (error) {
+                res.status(400).json({ error: "Invalid refresh token" });
+                return;
+            }
+            const token = jwt.sign(
+                { email: decodedToken.email, id: decodedToken.id },
+                process.env.JWT_SECRET,
+                { expiresIn: 60 * 60 * 24 }
+            );
+
+            res.json({ token });
+        }
+    );
 });
 
 app.use((req, res, next) => {
@@ -82,25 +112,29 @@ app.use((req, res, next) => {
 
     const token = req.headers.authorization.substring(7);
 
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
+        if (error) {
+            return res.status(401).json({ error: "Token missing or invalid" });
+        }
 
-    res.locals.userId = decodedToken.id;
+        res.locals.userId = decodedToken.id;
 
-    next();
+        next();
+    });
 });
 
 app.delete("/api/users", async (req, res) => {
     const response = await User.findByIdAndRemove(res.locals.userId);
 
     if (!response) {
-        return res.status(401).json({error: "Not authorized"})
+        return res.status(401).json({ error: "Not authorized" });
     }
 
-    await Plant.deleteMany({userId: res.locals.userId})
-    await GrowingMedium.deleteMany({userId: res.locals.userId})
+    await Plant.deleteMany({ userId: res.locals.userId });
+    await GrowingMedium.deleteMany({ userId: res.locals.userId });
 
     res.sendStatus(200);
-})
+});
 
 // plant data
 
