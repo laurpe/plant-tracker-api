@@ -76,7 +76,7 @@ app.post("/api/login", async (req, res) => {
     const refreshToken = jwt.sign(
         { email: user.email, id: user._id },
         process.env.JWT_REFRESH_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: 10 }
     );
 
     res.json({ token, refreshToken, email: user.email });
@@ -86,18 +86,23 @@ app.post("/api/refresh", async (req, res) => {
     const body = req.body;
     const refreshToken = body.refreshToken;
 
-    const decodedRefreshToken = jwt.verify(
+    jwt.verify(
         refreshToken,
-        process.env.JWT_REFRESH_SECRET
-    );
+        process.env.JWT_REFRESH_SECRET,
+        (error, decodedToken) => {
+            if (error) {
+                res.status(400).json({ error: "Invalid refresh token" });
+                return;
+            }
+            const token = jwt.sign(
+                { email: decodedToken.email, id: decodedToken.id },
+                process.env.JWT_SECRET,
+                { expiresIn: 5 }
+            );
 
-    const token = jwt.sign(
-        { email: decodedRefreshToken.email, id: decodedRefreshToken.id },
-        process.env.JWT_SECRET,
-        { expiresIn: 5 }
+            res.json({ token });
+        }
     );
-
-    res.json({ token });
 });
 
 app.use((req, res, next) => {
