@@ -8,12 +8,13 @@ jobs:
         name: build and deploy lambda
         strategy:
             matrix:
-                node-version: [16.x]
+                node-version: [20.x]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v4
+
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
             - name: npm install and build
@@ -27,7 +28,7 @@ jobs:
               with:
                   args: zip -qq -r ./bundle.zip ./
             - name: default deploy
-              uses: appleboy/lambda-action@master
+              uses: appleboy/lambda-action@0.2.0
               with:
                   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
